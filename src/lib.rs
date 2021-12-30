@@ -13,14 +13,14 @@ mod tests {
     };
 
     #[test]
-    fn it_works() {
+    fn list_archive_content() {
         unsafe {
             let a = archive_read_new();
             archive_read_support_filter_all(a);
             archive_read_support_format_all(a);
 
             let c_str = CString::new("data/temp.tar").unwrap();
-            let r = archive_read_open_filename(a, c_str.as_ptr() as *const i8, 10240) as u32;
+            let mut r = archive_read_open_filename(a, c_str.as_ptr() as *const i8, 10240) as u32;
             // Note 1
 
             if r != ARCHIVE_OK {
@@ -36,6 +36,11 @@ mod tests {
                         .unwrap()
                 );
                 archive_read_data_skip(a);
+            }
+
+            r = archive_read_free(a) as u32; // Note 3
+            if r != ARCHIVE_OK {
+                panic!("Fails on archive_read_free!");
             }
         }
     }
